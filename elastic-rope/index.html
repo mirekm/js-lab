@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;"/>
+    <title>Elastic Rope by Mirumee</title> 
+    
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.0/jquery-ui.min.js"></script>
+    
+    <script src="rope.js"></script>
+    <style>
+    body
+    {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #FFFFFF;
+    }
+    #outer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+    #rope-outer {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .start,
+    .end {
+        position: absolute;
+        background: #5b5b5b;
+        width: 10px;
+        height: 10px;
+        -moz-border-radius: 5px;
+    }
+    .start {
+    }
+    </style> 
+</head> 
+<body>
+<p>Try dragging the handlers...</p>
+<div id="outer">
+    <script>
+        var createDragableRope = function(id, parent, startPoint, endPoint) {
+            parent.prepend('<div id="' + id + '" class="rope-outer"></div>');
+            var ropeEl = $("#" + id);
+            var startId = id + "_start";
+            var endId = id + "_end";
+            var canvasId = id + "_output";
+            ropeEl.prepend('<div class="start" id="' + startId + '"></div>');
+            ropeEl.prepend('<div class="end" id="' + endId + '"></div>');
+            ropeEl.prepend('<canvas id="' + canvasId + '"></canvas>');
+            var output = document.getElementById(canvasId);
+            output.width = window.innerWidth;
+            output.height = window.innerHeight;
+            
+            var rope = Cable(output, startPoint, endPoint);
+            rope.initialize();
+            
+            // 30 beats per sec
+            setInterval(function() {
+                rope.redraw();
+            }, 1000/30);
+            
+            // Drag&drop
+            $( "#" + startId ).css({top: startPoint.y-5, left: startPoint.x-5});
+            $( "#" + startId ).draggable({
+                revert: false,
+                stack: ".start, .end",
+                drag: function(event, ui) {
+                    rope.setStartPoint(ui.position.left+5, ui.position.top+5);
+                }
+            });
+            
+            $( "#" + endId ).css({top: endPoint.y-5, left: endPoint.x-5});
+            $( "#" + endId ).draggable({
+                revert: false,
+                stack: ".start, .end",
+                drag: function(event, ui) {
+                    rope.setEndPoint(ui.position.left+5, ui.position.top+5);
+                }
+            });
+        }
+        
+        // Initialize rope
+        createDragableRope("rope", $("#outer"), {x: 50, y: 50}, {x:100, y: 50} );
+</script>
+
+</div>
+</body> 
+</html> 
+
